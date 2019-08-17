@@ -1,8 +1,38 @@
 # Semantic Segmentation
 ### Introduction
-In this project, you'll label the pixels of a road in images using a Fully Convolutional Network (FCN).
+In this project, for images depicting road scenes, I used a Fully Convolutional Network (FCN) to label the road pixels (as green).
 
-### Setup
+### Overview
+- Use a frozen VGG16 model as the Encoder part. This model already contained the 1x1 convolutions to replace the fully connected layers. 
+- Layers from the VGG16 model: output layers 3, 4, and 7 were used for further 1x1 convolutions, upsampling and skip connections in the Decoder part.
+- Initializer: random_normal_initializer with std_dev = 0.01 for all kernel weights.
+- Regularizer: l2_regularizer with a scale of 1e-3.
+- Decoder structure:
+
+  1x1 convolutions on vgg_layer7_out -> upsample -> layer7_out
+
+  1x1 convolutions on vgg_layer4_out -> skip_connection with above layer7_out -> upsample -> layer4_out
+  
+  1x1 convolutions on vgg_layer3_out -> skip_connection with above layer4_out -> upsample -> last_layer_out
+- On the last_layer_out use cross entropy loss followed by Adam Optimizer to minimize the loss and train the model
+- Run on test data to see how pixels are labeled. Some examples shown below:
+
+Good labeling:
+
+![Good Example 1](https://github.com/shubhra/sdc-semantic-segmentation/blob/master/runs/um_000003.png)
+![Good Example 2](https://github.com/shubhra/sdc-semantic-segmentation/blob/master/runs/um_000008.png)
+![Good Example 3](https://github.com/shubhra/sdc-semantic-segmentation/blob/master/runs/umm_000078.png)
+![Good Example 4](https://github.com/shubhra/sdc-semantic-segmentation/blob/master/runs/uu_000031.png)
+
+Not so good labeling:
+
+![Bad Example 1](https://github.com/shubhra/sdc-semantic-segmentation/blob/master/runs/uu_000082.png)
+![Bad Example 2](https://github.com/shubhra/sdc-semantic-segmentation/blob/master/runs/uu_000065.png)
+
+----------------------------------------------------------------------------------------------------------------
+
+### Project Setup Details
+
 ##### GPU
 `main.py` will check to make sure you are using GPU - if you don't have a GPU on your system, you can use AWS or another cloud computing platform.
 ##### Frameworks and Packages
